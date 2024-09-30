@@ -46,6 +46,11 @@ with open('ip.txt', 'w', encoding='utf-8') as file:
             continue
 
 # 检查文件是否为空
-if os.path.exists('ip.txt') and os.path.getsize('ip.txt') > 0:
-    with open('ip.txt', 'r', encoding='utf-8') as file:
-        print(file.read(500))  # 读取前500个字符
+if os.path.exists('ip.txt'):
+    if os.path.getsize('ip.txt') > 0:
+        with open('ip.txt', 'r', encoding='utf-8') as file:
+            print(file.read(500))  # 读取前500个字符
+    else:
+        print("警告：ip.txt 文件是空的。没有成功写入任何数据。")
+else:
+    print("错误：ip.txt 文件不存在。")
