@@ -4,8 +4,8 @@ import re
 import os
 
 # 目标URL列表
-urls = ['https://stock.hostmonit.com/CloudFlareYes', 
-        'https://ip.164746.xyz'
+urls = ['', 
+        'https://cf.090227.xyz/'
         ]
 
 # 正则表达式用于匹配IP地址
