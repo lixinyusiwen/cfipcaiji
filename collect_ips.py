@@ -3,6 +3,12 @@ from bs4 import BeautifulSoup
 import re
 import os
 
+# 获取脚本所在的目录
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# 设置输出文件的路径
+output_file = os.path.join(script_dir, 'ip.txt')
+
 # 目标URL列表
 urls = ['https://cf.090227.xyz/']
 
@@ -10,11 +16,13 @@ urls = ['https://cf.090227.xyz/']
 ip_pattern = r'(?:(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(?:[0-9a-fA-F:]+))'
 
 # 检查ip.txt文件是否存在，如果存在则删除它
-if os.path.exists('ip.txt'):
-    os.remove('ip.txt')
+if os.path.exists(output_file):
+    os.remove(output_file)
+
+print(f"输出文件将保存在: {output_file}")
 
 # 创建一个文件来存储IP地址
-with open('ip.txt', 'w', encoding='utf-8') as file:
+with open(output_file, 'w', encoding='utf-8') as file:
     for url in urls:
         try:
             print(f"正在处理 URL: {url}")
@@ -63,12 +71,12 @@ with open('ip.txt', 'w', encoding='utf-8') as file:
 print('处理完成。检查ip.txt文件是否有内容。')
 
 # 检查文件是否为空
-if os.path.getsize('ip.txt') == 0:
-    print("警告：ip.txt 文件是空的。没有成功写入任何数据。")
+if os.path.getsize(output_file) == 0:
+    print(f"警告：{output_file} 文件是空的。没有成功写入任何数据。")
 else:
-    print(f"成功写入数据到 ip.txt。文件大小：{os.path.getsize('ip.txt')} 字节")
+    print(f"成功写入数据到 {output_file}。文件大小：{os.path.getsize(output_file)} 字节")
 
 # 打印文件内容（前几行）用于验证
-with open('ip.txt', 'r', encoding='utf-8') as file:
-    print("ip.txt 内容预览:")
+with open(output_file, 'r', encoding='utf-8') as file:
+    print(f"{output_file} 内容预览:")
     print(file.read(500))  # 读取前500个字符
