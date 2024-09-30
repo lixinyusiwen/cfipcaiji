@@ -4,7 +4,11 @@ import re
 import os
 
 # 目标URL列表
-urls = ['https://cf.090227.xyz/']
+urls = [
+    'https://monitor.gacjie.cn/page/cloudflare/ipv4.html', 
+    'https://ip.164746.xyz',
+    'https://cf.090227.xyz/'
+]
 
 # 正则表达式用于匹配IP地址 (同时支持 IPv4 和 IPv6)
 ip_pattern = r'(?:(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(?:[0-9a-fA-F:]+))'
@@ -29,32 +33,46 @@ with open('ip.txt', 'w', encoding='utf-8') as file:
             # 使用BeautifulSoup解析HTML
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            # 查找包含IP信息的表格
-            table = soup.find('table', class_='table')
-
-            if table:
-                print("找到表格，开始解析行")
-                rows = table.find_all('tr')[1:]  # 跳过表头
-                for row in rows:
-                    columns = row.find_all('td')
-                    if len(columns) >= 4:
-                        ip = columns[1].text.strip()
-                        line = columns[0].text.strip()
-
-                        print(f"解析到IP: {ip}, 线路: {line}")
-
-                        # 检查IP是否为IPv6格式
-                        if ':' in ip:
-                            formatted_ip = f"[{ip}]:8443#{line}"
-                        else:
-                            formatted_ip = f"{ip}:8443#{line}"
-
-                        file.write(formatted_ip + '\n')
-                        print(f"写入: {formatted_ip}")
+            if url == 'https://cf.090227.xyz/':
+                # 处理 cf.090227.xyz 的特殊情况
+                table = soup.find('table', class_='table')
+                if table:
+                    print("找到表格，开始解析行")
+                    rows = table.find_all('tr')[1:]  # 跳过表头
+                    for row in rows:
+                        columns = row.find_all('td')
+                        if len(columns) >= 4:
+                            ip = columns[1].text.strip()
+                            line = columns[0].text.strip()
+                            
+                            # 检查IP是否为IPv6格式
+                            if ':' in ip:
+                                formatted_ip = f"[{ip}]:8443#{line}"
+                            else:
+                                formatted_ip = f"{ip}:8443#{line}"
+                            
+                            file.write(formatted_ip + '\n')
+                            print(f"写入: {formatted_ip}")
+                else:
+                    print(f"在 {url} 中未找到包含IP信息的表格。")
             else:
-                print(f"在 {url} 中未找到包含IP信息的表格。")
-                print("页面内容预览:")
-                print(soup.prettify()[:500])  # 打印页面前500个字符用于调试
+                # 处理其他网站
+                if url == 'https://monitor.gacjie.cn/page/cloudflare/ipv4.html':
+                    elements = soup.find_all('tr')
+                elif url == 'https://ip.164746.xyz':
+                    elements = soup.find_all('tr')
+                else:
+                    elements = soup.find_all('li')
+                
+                # 遍历所有元素，查找IP地址
+                for element in elements:
+                    element_text = element.get_text()
+                    ip_matches = re.findall(ip_pattern, element_text)
+                    
+                    # 如果找到IP地址，则写入文件
+                    for ip in ip_matches:
+                        file.write(ip + '\n')
+                        print(f"写入: {ip}")
 
         except requests.RequestException as e:
             print(f"请求 {url} 时发生错误: {e}")
@@ -77,4 +95,4 @@ if os.path.exists('ip.txt'):
 else:
     print("错误：ip.txt 文件不存在。可能是由于写入过程中发生错误。")
 
-print('脚本执行完毕。')
+print('IP地址已保存到ip.txt文件中。脚本执行完毕。')
