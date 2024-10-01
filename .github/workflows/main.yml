@@ -3,7 +3,7 @@ name: Run every 5 minutes
 on:
   schedule:
     # 使用cron表达式，每5分钟执行一次
-    - cron: "*/5 * * * *"
+    #- cron: "*/5 * * * *"
  workflow_dispatch: # 允许手动触发
   #push: # 允许提交触发
 
